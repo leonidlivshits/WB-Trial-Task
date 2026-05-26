@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "event_type": "search.query.submitted",
+  "event_id": "0196b4d0-6a20-7f2d-b18d-6f0ab4e2c111",
+  "ingested_at_ms": 1779656406123,
+  "query_raw": "кроссовки nike",
+  "source": "catalog",
+  "ip_hash": "ip_A1b2C3d4E5",
+  "session_id_hash": "s_Z9y8X7w6V5",
+  "auth_state": "anonymous",
+  "user_id_hash": null
+}

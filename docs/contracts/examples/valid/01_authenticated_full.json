@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "event_type": "search.query.submitted",
+  "event_id": "0196b4d0-5f0f-7c2f-a5b4-8c4c9b9f3a10",
+  "ingested_at_ms": 1779656405123,
+  "event_time_ms": 1779656405000,
+  "query_raw": "Купить   айфон !",
+  "source": "search_bar",
+  "platform": "ios",
+  "app_version": "7.42.1",
+  "ip_hash": "ip_7c9f4dA1b2",
+  "session_id_hash": "s_92ab10QwEr",
+  "auth_state": "authenticated",
+  "user_id_hash": "u_18ac0ePzRt",
+  "is_test_traffic": false,
+  "is_replay": false,
+  "producer_region": "ru-central1",
+  "normalizer_version": "norm-v1"
+}

@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wb-trial.local/schemas/search_event.v1.schema.json",
+  "title": "Событие поиска",
+  "description": "Сообщение, которое сервис поиска отправляет в Кафку.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_type",
+    "event_id",
+    "ingested_at_ms",
+    "query_raw",
+    "source",
+    "ip_hash",
+    "session_id_hash",
+    "auth_state",
+    "user_id_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1,
+      "description": "Версия схемы. Сейчас всегда 1."
+    },
+    "event_type": {
+      "type": "string",
+      "const": "search.query.submitted",
+      "description": "Тип события. Сейчас всегда search.query.submitted."
+    },
+    "event_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Уникальный id события."
+    },
+    "ingested_at_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Время приёма события (мс, UTC)."
+    },
+    "event_time_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Время события у отправителя (мс, UTC)."
+    },
+    "query_raw": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Исходный текст запроса."
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "search_bar",
+        "suggest",
+        "catalog",
+        "other"
+      ],
+      "description": "Откуда пришёл запрос."
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "web",
+        "ios",
+        "android",
+        "api",
+        "other"
+      ],
+      "description": "Платформа клиента."
+    },
+    "app_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Версия приложения."
+    },
+    "ip_hash": {
+      "type": "string",
+      "pattern": "^ip_[A-Za-z0-9._-]{6,128}$",
+      "description": "Хеш IP."
+    },
+    "session_id_hash": {
+      "type": "string",
+      "pattern": "^s_[A-Za-z0-9._-]{6,128}$",
+      "description": "Хеш сессии."
+    },
+    "auth_state": {
+      "type": "string",
+      "enum": [
+        "anonymous",
+        "authenticated"
+      ],
+      "description": "Состояние входа пользователя."
+    },
+    "user_id_hash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^u_[A-Za-z0-9._-]{6,128}$",
+      "description": "Хеш пользователя."
+    },
+    "is_test_traffic": {
+      "type": "boolean",
+      "default": false,
+      "description": "Тестовый трафик."
+    },
+    "is_replay": {
+      "type": "boolean",
+      "default": false,
+      "description": "Повторная отправка истории."
+    },
+    "producer_region": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 32,
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Регион отправителя."
+    },
+    "normalizer_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "pattern": "^[A-Za-z0-9._-]+$",
+      "description": "Версия правил очистки текста."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "auth_state": {
+            "const": "authenticated"
+          }
+        },
+        "required": [
+          "auth_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "user_id_hash": {
+            "type": "string",
+            "pattern": "^u_[A-Za-z0-9._-]{6,128}$"
+          }
+        },
+        "required": [
+          "user_id_hash"
+        ]
+      },
+      "else": {
+        "properties": {
+          "user_id_hash": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "user_id_hash"
+        ]
+      }
+    }
+  ]
+}

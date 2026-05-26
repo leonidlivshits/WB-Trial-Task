@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "event_type": "search.query.submitted",
+  "event_id": "0196b4d0-7b31-7d9f-a0f4-9137be44d222",
+  "ingested_at_ms": 1779656407123,
+  "event_time_ms": 1779655407123,
+  "query_raw": "платье летнее",
+  "source": "suggest",
+  "platform": "web",
+  "app_version": "web-2026.05.25",
+  "ip_hash": "ip_Xx77Yy88Zz",
+  "session_id_hash": "s_Kk11Ll22Mm",
+  "auth_state": "authenticated",
+  "user_id_hash": "u_Pp33Qq44Rr",
+  "is_test_traffic": true,
+  "is_replay": true,
+  "producer_region": "eu-west-1",
+  "normalizer_version": "norm-v1"
+}

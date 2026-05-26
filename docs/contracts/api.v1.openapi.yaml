@@ -1,0 +1,354 @@
+openapi: 3.1.0
+info:
+  title: Search Trends API
+  version: 1.0.0
+  description: >
+    API сервиса "Сейчас ищут": выдача самых частых запросов за последние
+    5 минут и управление стоп-словами.
+servers:
+  - url: http://localhost:8080
+    description: Локальный запуск
+tags:
+  - name: Public
+    description: Публичные ручки
+  - name: Admin
+    description: Админ-ручки
+  - name: Observability
+    description: Наблюдаемость сервиса
+paths:
+  /api/v1/top:
+    get:
+      tags: [Public]
+      summary: Получить Top-N запросов за последние 5 минут
+      description: >
+        Возвращает готовый срез в памяти. Запросы из стоп-листа в ответ не попадают.
+      parameters:
+        - name: n
+          in: query
+          description: Размер топа
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TopResponse"
+              examples:
+                ok:
+                  value:
+                    generated_at_ms: 1779656406123
+                    freshness_lag_ms: 350
+                    window_seconds: 300
+                    n: 3
+                    items:
+                      - rank: 1
+                        query: "купить айфон"
+                        score: 125.0
+                        count: 125
+                        unique_sources: 102
+                      - rank: 2
+                        query: "кроссовки nike"
+                        score: 99.5
+                        count: 102
+                        unique_sources: 77
+                      - rank: 3
+                        query: "платье летнее"
+                        score: 80.0
+                        count: 81
+                        unique_sources: 69
+        "400":
+          description: Неверный параметр `n`
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: "INVALID_ARGUMENT"
+                message: "n must be in range [1, 100]"
+        "503":
+          description: Срез временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: "UNAVAILABLE"
+                message: "top is unavailable"
+
+  /api/v1/stop-words:
+    get:
+      tags: [Admin]
+      summary: Получить текущий стоп-лист
+      security:
+        - adminToken: []
+      responses:
+        "200":
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StopWordsResponse"
+              example:
+                version: 7
+                words:
+                  - "бесплатно"
+                  - "скачать"
+                updated_at_ms: 1779656406123
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    post:
+      tags: [Admin]
+      summary: Добавить слово в стоп-лист
+      security:
+        - adminToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddStopWordRequest"
+            example:
+              word: "бесплатно"
+      responses:
+        "201":
+          description: Слово добавлено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse"
+              example:
+                status: "ok"
+                version: 8
+        "400":
+          description: Невалидное слово
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "409":
+          description: Слово уже присутствует
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/stop-words/{word}:
+    delete:
+      tags: [Admin]
+      summary: Удалить слово из стоп-листа
+      security:
+        - adminToken: []
+      parameters:
+        - name: word
+          in: path
+          required: true
+          description: Слово в нормализованной форме
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+      responses:
+        "200":
+          description: Слово удалено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MutationResponse"
+              example:
+                status: "ok"
+                version: 9
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: Слово не найдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/health:
+    get:
+      tags: [Public]
+      summary: Проверка работоспособности
+      responses:
+        "200":
+          description: Сервис готов к работе
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+              example:
+                status: "ok"
+                version: "1.0.0"
+                kafka_connected: true
+                snapshot_ready: true
+
+  /metrics:
+    get:
+      tags: [Observability]
+      summary: Метрики в формате Prometheus
+      responses:
+        "200":
+          description: Текстовый ответ с метриками
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |
+                # HELP trends_ingest_events_total Total number of successfully ingested events.
+                # TYPE trends_ingest_events_total counter
+                trends_ingest_events_total 42
+components:
+  securitySchemes:
+    adminToken:
+      type: apiKey
+      in: header
+      name: X-Admin-Token
+      description: 'Введите только значение токена, без префикса "X-Admin-Token:". Пример: dev-admin-token'
+  responses:
+    Unauthorized:
+      description: Невалидный или отсутствующий админ-токен
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            code: "UNAUTHORIZED"
+            message: "invalid or missing X-Admin-Token"
+  schemas:
+    TopItem:
+      type: object
+      additionalProperties: false
+      required:
+        - rank
+        - query
+        - score
+        - count
+        - unique_sources
+      properties:
+        rank:
+          type: integer
+          minimum: 1
+        query:
+          type: string
+          minLength: 1
+          maxLength: 256
+        score:
+          type: number
+          minimum: 0
+        count:
+          type: integer
+          minimum: 0
+        unique_sources:
+          type: integer
+          minimum: 0
+    TopResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - generated_at_ms
+        - freshness_lag_ms
+        - window_seconds
+        - n
+        - items
+      properties:
+        generated_at_ms:
+          type: integer
+          minimum: 0
+        freshness_lag_ms:
+          type: integer
+          minimum: 0
+        window_seconds:
+          type: integer
+          const: 300
+        n:
+          type: integer
+          minimum: 1
+          maximum: 100
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/TopItem"
+    AddStopWordRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - word
+      properties:
+        word:
+          type: string
+          minLength: 1
+          maxLength: 64
+    StopWordsResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - version
+        - words
+        - updated_at_ms
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        words:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 64
+        updated_at_ms:
+          type: integer
+          minimum: 0
+    MutationResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - status
+        - version
+      properties:
+        status:
+          type: string
+          const: "ok"
+        version:
+          type: integer
+          minimum: 1
+    HealthResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - status
+        - version
+        - kafka_connected
+        - snapshot_ready
+      properties:
+        status:
+          type: string
+          enum: ["ok", "degraded"]
+        version:
+          type: string
+        kafka_connected:
+          type: boolean
+        snapshot_ready:
+          type: boolean
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          minLength: 1
+        message:
+          type: string
+          minLength: 1

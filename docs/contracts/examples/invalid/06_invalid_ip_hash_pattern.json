@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "event_type": "search.query.submitted",
+  "event_id": "0196b4d0-c086-7b2c-9a2f-97eceaa3d777",
+  "ingested_at_ms": 1779656413123,
+  "query_raw": "детский велосипед",
+  "source": "catalog",
+  "ip_hash": "bad-hash-value",
+  "session_id_hash": "s_Bb99Cc00Dd",
+  "auth_state": "anonymous",
+  "user_id_hash": null
+}

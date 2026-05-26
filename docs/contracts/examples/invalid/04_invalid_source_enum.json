@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "event_type": "search.query.submitted",
+  "event_id": "0196b4d0-bf75-7cb1-99fd-7cdab992f666",
+  "ingested_at_ms": 1779656411123,
+  "query_raw": "смартфон",
+  "source": "homepage",
+  "ip_hash": "ip_Mm99Nn00Oo",
+  "session_id_hash": "s_Pp11Qq22Rr",
+  "auth_state": "anonymous",
+  "user_id_hash": null
+}

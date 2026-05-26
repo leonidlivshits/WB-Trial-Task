@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "event_type": "search.query.submitted",
+  "event_id": "0196b4d0-ae64-7ee0-b3d1-47f8e551e555",
+  "ingested_at_ms": 1779656410123,
+  "query_raw": "ноутбук игровой",
+  "source": "search_bar",
+  "ip_hash": "ip_Jj77Kk88Ll",
+  "auth_state": "anonymous",
+  "user_id_hash": null
+}

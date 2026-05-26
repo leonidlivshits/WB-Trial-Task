@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "event_type": "search.query.submitted",
+  "event_id": "not-a-uuid",
+  "ingested_at_ms": 1779656412123,
+  "query_raw": "часы мужские",
+  "source": "suggest",
+  "ip_hash": "ip_Ss33Tt44Uu",
+  "session_id_hash": "s_Vv55Ww66Xx",
+  "auth_state": "authenticated",
+  "user_id_hash": "u_Yy77Zz88Aa"
+}

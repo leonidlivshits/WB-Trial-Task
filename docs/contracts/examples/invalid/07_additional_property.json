@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "event_type": "search.query.submitted",
+  "event_id": "0196b4d0-d197-7aef-b9be-52bbced4e888",
+  "ingested_at_ms": 1779656414123,
+  "query_raw": "кофемашина",
+  "source": "search_bar",
+  "ip_hash": "ip_Ee11Ff22Gg",
+  "session_id_hash": "s_Hh33Ii44Jj",
+  "auth_state": "anonymous",
+  "user_id_hash": null,
+  "unexpected_field": "must_fail"
+}

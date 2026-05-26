@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "event_type": "search.query.submitted",
+  "event_id": "0196b4d0-8c42-7f6b-8d22-7b8e5a11f333",
+  "ingested_at_ms": 1779656408123,
+  "query_raw": "купить айфон",
+  "source": "search_bar",
+  "ip_hash": "ip_Qq55Ww66Ee",
+  "session_id_hash": "s_Rr77Tt88Yy",
+  "auth_state": "authenticated",
+  "user_id_hash": null
+}
